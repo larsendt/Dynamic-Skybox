@@ -27,6 +27,38 @@ class Shader(object):
 		self.printShaderLog(shader, shader_file)
 		return shader
 		
+	def setUniform1f(self, name, value):
+		loc = glGetUniformLocation(self.program, name)
+		glUniform1f(loc, value)
+		
+	def setUniform2f(self, name, v1, v2):
+		loc = glGetUniformLocation(self.program, name)
+		glUniform2f(loc, v1, v2)
+		
+	def setUniform3f(self, name, v1, v2, v3):
+		loc = glGetUniformLocation(self.program, name)
+		glUniform3f(loc, v1, v2, v3)
+		
+	def setUniform4f(self, name, v1, v2, v3, v4):
+		loc = glGetUniformLocation(self.program, name)
+		glUniform4f(loc, v1, v2, v3, v4)	
+		
+	def setUniform1i(self, name, value):
+		loc = glGetUniformLocation(self.program, name)
+		glUniform1i(loc, value)
+		
+	def setUniform2i(self, name, v1, v2):
+		loc = glGetUniformLocation(self.program, name)
+		glUniform2i(loc, v1, v2)
+		
+	def setUniform3i(self, name, v1, v2, v3):
+		loc = glGetUniformLocation(self.program, name)
+		glUniform3i(loc, v1, v2, v3)
+		
+	def setUniform4i(self, name, v1, v2, v3, v4):
+		loc = glGetUniformLocation(self.program, name)
+		glUniform4i(loc, v1, v2, v3, v4)	
+	
 	def compileProgram(self, vertex_shader, fragment_shader):
 		program = glCreateProgram()
 		glAttachShader(program, vertex_shader)
