@@ -7,6 +7,8 @@ from OpenGL.GLUT import *
 
 import sys
 import shader
+import time
+import random
 
 class GLWrapper(object):
 	def __init__(self):
@@ -21,21 +23,26 @@ class GLWrapper(object):
 		glutReshapeFunc(self.reshape)
 		glutIdleFunc(self.idle)
 		
+		self.time = time.clock()
 		self.screen_width = 1.0
 		self.shader = shader.Shader("./shaders/skybox.vert", "./shaders/skybox.frag")
+		self.seed = random.uniform(0, 5000)
 	
 	def begin(self):
 		glutMainLoop()
 
 	def idle(self):
-		pass
+		self.time = time.clock()
+		glutPostRedisplay();
 	
 	def draw(self):
 		glClear(GL_COLOR_BUFFER_BIT)
 		glLoadIdentity();
 		
 		self.shader.bind()
-		
+		self.shader.setUniform1f("time", self.time)
+		self.shader.setUniform1f("seed", self.seed)
+				
 		glColor3f(1, 1, 1)
 		glBegin(GL_POLYGON)
 		glVertex3f(-self.screen_width, -1.0, 0.0)
