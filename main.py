@@ -6,38 +6,79 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
 import sys
+import shader
 
-def init():
-	glutInit(len(sys.argv), sys.argv)
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE)
-	glutInitWindowSize(800, 600);
-	win_id = glutCreateWindow('Dynamic Skybox')
-	glutDisplayFunc(draw)
-	glutMotionFunc(mouse_drag)
-	glutKeyboardFunc(keyboard)
-	glutMouseFunc(mouse_press)
-	glutMainLoop()
+class GLWrapper(object):
+	def __init__(self):
+		glutInit(len(sys.argv), sys.argv)
+		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE)
+		glutInitWindowSize(800, 600);
+		glutCreateWindow('Dynamic Skybox')
+		glutDisplayFunc(self.draw)
+		glutMotionFunc(self.mouse_drag)
+		glutKeyboardFunc(self.keyboard)
+		glutMouseFunc(self.mouse_press)
+		glutReshapeFunc(self.reshape)
+		glutIdleFunc(self.idle)
+		
+		self.screen_width = 1.0
+		self.shader = shader.Shader("./shaders/skybox.vert", "./shaders/skybox.frag")
 	
+	def begin(self):
+		glutMainLoop()
+
+	def idle(self):
+		pass
 	
-def draw():
-	glClear(GL_COLOR_BUFFER_BIT)
-	glLoadIdentity();
+	def draw(self):
+		glClear(GL_COLOR_BUFFER_BIT)
+		glLoadIdentity();
+		
+		self.shader.bind()
+		
+		glColor3f(1, 1, 1)
+		glBegin(GL_POLYGON)
+		glVertex3f(-self.screen_width, -1.0, 0.0)
+		glVertex3f(self.screen_width, -1.0, 0.0)
+		glVertex3f(self.screen_width, 1.0, 0.0)
+		glVertex3f(-self.screen_width, 1.0, 0.0)
+		glEnd();
+
+		self.shader.release()
 	
-	glFlush();
-	glutSwapBuffers();
+		glFlush();
+		glutSwapBuffers();
 	
-def mouse_drag(x, y):
-	print "mouse_drag"
+	def reshape(self, width, height):
+		if height > 0:
+			self.screen_width = float(width)/height
+		else:
+			self.screen_width = 1.0
+		
+		glViewport(0,0, width,height)
+		glMatrixMode(GL_PROJECTION)
+		glLoadIdentity()
+		glOrtho(-self.screen_width,+self.screen_width, -1.0,+1.0, -1.0,+5.0)
+		glMatrixMode(GL_MODELVIEW)
+		glLoadIdentity()
 	
-def mouse_press(button, state, x, y):
-	print "mouse press"
+	def mouse_drag(self, x, y):
+		print "mouse_drag"
 	
-def keyboard(key, x, y):
-	print "keyboard"
+	def mouse_press(self, button, state, x, y):
+		print "mouse press"
+	
+	def keyboard(self, key, x, y):
+		if key == '\x1b': #escape key
+			print "quit"
+			sys.exit(0)
+	
+		print "keyboard"
 	
 def main():
 	print "Initializing OpenGL..."
-	init()
+	gl_wrapper = GLWrapper()
+	gl_wrapper.begin()
 	
 if __name__ == "__main__":
 	main()
